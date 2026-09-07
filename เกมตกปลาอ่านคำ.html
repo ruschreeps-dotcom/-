@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>เกมตกปลาอ่านคำ - สื่อการเรียนรู้ภาษาไทยสำหรับเด็ก</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt & Mali & Mitr & Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=Mali:wght@500;700&family=Mitr:wght@400;600;700&family=Prompt:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Victory Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Prompt', 'Kanit', sans-serif;
+            touch-action: manipulation;
+        }
+
+        .font-mali {
+            font-family: 'Mali', cursive, sans-serif;
+        }
+        
+        .font-mitr {
+            font-family: 'Mitr', sans-serif;
+        }
+
+        .font-kanit {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        /* Sky and Pond Gradient Background */
+        body {
+            background: linear-gradient(180deg, #7dd3fc 0%, #bae6fd 28%, #38bdf8 28%, #0284c7 100%);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+        }
+
+        /* Animated Water Waves */
+        .wave {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 C150,90 350,-40 500,40 C650,120 900,10 1200,40 L1200,120 L0,120 Z' fill='%230284c7' opacity='0.85'%3E%3C/path%3E%3C/svg%3E");
+            position: absolute;
+            top: 25%;
+            left: 0;
+            width: 200%;
+            height: 45px;
+            animation: waveAnim 10s linear infinite;
+        }
+
+        .wave2 {
+            top: 27%;
+            animation: waveAnim 7s linear infinite reverse;
+            opacity: 0.5;
+        }
+
+        @keyframes waveAnim {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Floating Fisherman Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+        }
+
+        .float-animation {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+
+        /* Fishing Line Canvas Overlay */
+        #fishingCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        /* Swimming Fish Object Styling */
+        .fish-item {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.3));
+            will-change: left, top;
+            z-index: 10;
+        }
+
+        .fish-item:hover, .fish-item:active {
+            transform: scale(1.12);
+            filter: drop-shadow(0px 8px 18px rgba(253, 224, 71, 0.95));
+        }
+
+        /* Modal backdrop blurring */
+        .modal-backdrop {
+            background-color: rgba(3, 105, 161, 0.78);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Kids Game Buttons */
+        .btn-game {
+            background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
+            box-shadow: 0 6px 0 #ca8a04, 0 10px 15px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            transition: all 0.1s ease;
+        }
+
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #ca8a04, 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-blue {
+            background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+            box-shadow: 0 6px 0 #0369A1, 0 10px 15px rgba(0,0,0,0.3);
+        }
+        .btn-blue:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0369A1, 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-green {
+            background: linear-gradient(180deg, #4ADE80 0%, #16A34A 100%);
+            box-shadow: 0 6px 0 #15803D, 0 10px 15px rgba(0,0,0,0.3);
+        }
+        .btn-green:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #15803D, 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Pulse Ring for Audio Speaker */
+        @keyframes pulseAudio {
+            0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(14, 165, 233, 0); }
+            100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+        }
+        .audio-playing {
+            animation: pulseAudio 1.4s infinite;
+        }
+
+        /* Musical Equalizer Bar Animation */
+        @keyframes eqBar {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+        .eq-bar-1 { animation: eqBar 0.6s infinite ease-in-out; }
+        .eq-bar-2 { animation: eqBar 0.4s infinite ease-in-out 0.2s; }
+        .eq-bar-3 { animation: eqBar 0.5s infinite ease-in-out 0.1s; }
+
+        /* Custom Scrollbar for Bucket Modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen w-full flex flex-col justify-between overflow-hidden select-none">
+
+    <!-- Canvas for dynamic fishing line and hook -->
+    <canvas id="fishingCanvas"></canvas>
+
+    <!-- HEADER / SCOREBOARD BAR -->
+    <header class="relative z-20 p-2.5 sm:p-4 flex justify-between items-center max-w-6xl mx-auto w-full">
+        <!-- Game Logo & Title -->
+        <div class="flex items-center space-x-2 sm:space-x-3 bg-white/95 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-lg border-2 border-amber-300">
+            <div class="bg-amber-400 text-amber-950 w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-xl sm:text-2xl shadow-inner">
+                🎣
+            </div>
+            <div>
+                <h1 class="text-base sm:text-2xl font-black text-amber-950 leading-none font-mali">ตกปลาอ่านคำ</h1>
+                <p class="text-[10px] sm:text-xs text-amber-800 font-bold hidden sm:block">สื่อการเรียนรู้ภาษาไทย ระดับประถมศึกษา</p>
+            </div>
+        </div>
+
+        <!-- Scoreboard Counter, Bucket & Audio Controls -->
+        <div class="flex items-center space-x-2 sm:space-x-2.5">
+            <!-- Fish Count & Progress Bar -->
+            <div class="bg-white/95 backdrop-blur px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-lg border-2 border-sky-300 flex items-center space-x-2">
+                <span class="text-xl sm:text-2xl">🪣</span>
+                <div>
+                    <div class="text-[10px] sm:text-xs text-sky-800 font-bold">คำที่ตกได้</div>
+                    <div class="text-xs sm:text-base font-black text-sky-950">
+                        <span id="caughtCount" class="text-amber-600">0</span> / <span id="totalCount">48</span> ตัว
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Word Bucket Button -->
+            <button onclick="openBucketModal()" title="ดูคำศัพท์ที่ตกได้แล้ว" class="h-9 sm:h-11 px-3 bg-amber-400 hover:bg-amber-300 text-amber-950 rounded-2xl shadow-lg border-2 border-amber-200 flex items-center space-x-1.5 font-bold transition text-xs sm:text-sm">
+                <i class="fas fa-book-open text-sm sm:text-base"></i>
+                <span class="hidden md:inline">คลังคำศัพท์</span>
+            </button>
+
+            <!-- Background Music (BGM) Toggle Button -->
+            <button id="btnToggleBgm" onclick="toggleBgm()" title="เปิด/ปิด เสียงเพลงบรรยากาศ" class="h-9 sm:h-11 px-2.5 sm:px-3 bg-white/95 hover:bg-sky-50 text-sky-800 rounded-2xl shadow-lg border-2 border-sky-300 flex items-center space-x-1.5 font-bold transition text-xs sm:text-sm">
+                <div id="musicEqIcon" class="flex items-end space-x-0.5 h-4 w-4 justify-center">
+                    <span class="w-1 bg-sky-500 rounded-full eq-bar-1"></span>
+                    <span class="w-1 bg-sky-600 rounded-full eq-bar-2"></span>
+                    <span class="w-1 bg-sky-500 rounded-full eq-bar-3"></span>
+                </div>
+                <span id="bgmText" class="hidden sm:inline">เพลง 🎵</span>
+            </button>
+
+            <!-- Master Sound Toggle Button -->
+            <button id="btnToggleSound" onclick="toggleMute()" title="เปิด/ปิด เสียงเอฟเฟกต์" class="w-9 h-9 sm:w-11 sm:h-11 bg-white/95 rounded-2xl shadow-lg border-2 border-sky-300 flex items-center justify-center text-sky-700 hover:bg-sky-50 text-base sm:text-lg font-bold transition">
+                <i id="soundIcon" class="fas fa-volume-up"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- UPPER LAND SCENE (Fisher Kid & Wooden Pier) -->
+    <div class="relative w-full h-[23vh] min-h-[150px] z-10 pointer-events-none">
+        <!-- Waves behind wooden pier -->
+        <div class="wave"></div>
+        <div class="wave wave2"></div>
+
+        <!-- Wooden Pier Deck -->
+        <div class="absolute bottom-0 left-4 md:left-24 w-48 md:w-80 h-10 bg-amber-800 border-t-4 border-amber-600 rounded-t-sm shadow-2xl flex justify-around items-start">
+            <div class="w-4 h-14 bg-amber-900 border-r border-amber-950 -mt-2"></div>
+            <div class="w-4 h-14 bg-amber-900 border-r border-amber-950 -mt-2"></div>
+            <div class="w-4 h-14 bg-amber-900 border-r border-amber-950 -mt-2"></div>
+        </div>
+
+        <!-- Fisher Boy SVG Vector -->
+        <div id="fisherBoy" class="absolute bottom-4 left-12 md:left-36 w-28 md:w-40 h-32 md:h-44 float-animation pointer-events-none">
+            <svg viewBox="0 0 200 220" class="w-full h-full drop-shadow-lg">
+                <!-- Fishing Rod Stick -->
+                <path id="rodLine" d="M 80 110 L 220 15" stroke="#8B4513" stroke-width="6" stroke-linecap="round" />
+                <circle cx="220" cy="15" r="5" fill="#FFD700" />
+
+                <!-- Straw Hat -->
+                <ellipse cx="90" cy="55" rx="45" ry="12" fill="#E6C280" stroke="#B38600" stroke-width="3"/>
+                <path d="M 65 53 C 65 25, 115 25, 115 53 Z" fill="#F4D068" stroke="#B38600" stroke-width="3"/>
+                <path d="M 66 52 Q 90 48 114 52" stroke="#EF4444" stroke-width="5" fill="none"/>
+
+                <!-- Face -->
+                <circle cx="90" cy="70" r="22" fill="#FFDBAC"/>
+                <!-- Cheeks -->
+                <circle cx="78" cy="76" r="4" fill="#FF9999" opacity="0.6"/>
+                <circle cx="102" cy="76" r="4" fill="#FF9999" opacity="0.6"/>
+                <!-- Eyes -->
+                <circle cx="82" cy="68" r="3" fill="#222"/>
+                <circle cx="98" cy="68" r="3" fill="#222"/>
+                <!-- Smile -->
+                <path d="M 83 78 Q 90 85 97 78" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                <!-- Shirt & Overalls -->
+                <path d="M 68 92 L 112 92 L 118 135 L 62 135 Z" fill="#0284C7" rx="5"/>
+                <path d="M 62 135 L 118 135 L 114 160 L 66 160 Z" fill="#EF4444"/>
+
+                <!-- Arms -->
+                <path d="M 72 100 Q 90 110 100 105" stroke="#FFDBAC" stroke-width="9" stroke-linecap="round" fill="none"/>
+                <path d="M 72 100 Q 90 110 100 105" stroke="#0284C7" stroke-width="7" stroke-linecap="round" fill="none"/>
+
+                <!-- Legs -->
+                <rect x="68" y="155" width="14" height="25" rx="5" fill="#FFDBAC"/>
+                <rect x="94" y="155" width="14" height="25" rx="5" fill="#FFDBAC"/>
+            </svg>
+        </div>
+
+        <!-- Instructional Tooltip -->
+        <div class="absolute bottom-16 left-40 md:left-72 bg-white px-3.5 py-2 rounded-2xl shadow-lg border-2 border-amber-300 text-xs sm:text-sm font-bold text-amber-950 animate-bounce pointer-events-none flex items-center space-x-1.5">
+            <span>แตะปลาตัวโตใต้น้ำเพื่อตกขึ้นมาสะสมคำศัพท์! 🎣</span>
+        </div>
+    </div>
+
+    <!-- POND WATER AREA (Big Fish Swim Here) -->
+    <main id="pondArea" class="relative w-full flex-1 overflow-hidden z-10 cursor-crosshair">
+        <!-- Underwater Decor -->
+        <div class="absolute bottom-0 left-8 text-emerald-500 text-5xl opacity-40 select-none pointer-events-none">🌿</div>
+        <div class="absolute bottom-0 left-1/3 text-emerald-600 text-6xl opacity-30 select-none pointer-events-none">🌱</div>
+        <div class="absolute bottom-0 right-1/4 text-emerald-500 text-5xl opacity-40 select-none pointer-events-none">🌿</div>
+        <div class="absolute bottom-0 right-8 text-emerald-600 text-7xl opacity-30 select-none pointer-events-none">🪸</div>
+
+        <!-- Dynamic Ambient Water Bubbles -->
+        <div class="absolute top-1/4 left-1/4 w-3 h-3 bg-white/30 rounded-full animate-ping pointer-events-none"></div>
+        <div class="absolute top-2/3 left-3/4 w-5 h-5 bg-white/20 rounded-full animate-ping pointer-events-none" style="animation-duration: 3s;"></div>
+        <div class="absolute top-1/2 left-1/2 w-4 h-4 bg-white/25 rounded-full animate-ping pointer-events-none" style="animation-duration: 2.5s;"></div>
+
+        <!-- Fish Container -->
+        <div id="fishContainer" class="w-full h-full relative">
+            <!-- Fish Elements dynamically populated here -->
+        </div>
+    </main>
+
+    <!-- FOOTER BAR -->
+    <footer class="relative z-20 bg-sky-950/90 backdrop-blur border-t border-sky-400/30 text-white p-2.5 text-center text-xs sm:text-sm">
+        <div class="max-w-4xl mx-auto flex justify-between items-center px-2">
+            <span class="text-sky-200 font-medium text-[11px] sm:text-xs">💡 ตกปลาเพื่อเปิดคำศัพท์ภาษาไทย และฝึกอ่านออกเสียง!</span>
+            <button onclick="resetGamePrompt()" class="bg-amber-500 hover:bg-amber-400 text-amber-950 font-black px-3.5 py-1.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                <i class="fas fa-redo-alt"></i> เริ่มเกมใหม่
+            </button>
+        </div>
+    </footer>
+
+    <!-- POPUP MODAL: CAUGHT FISH & BIG REVEALED WORD -->
+    <div id="fishModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div id="modalCard" class="bg-gradient-to-b from-sky-50 via-white to-amber-50 rounded-3xl p-6 md:p-8 max-w-sm md:max-w-md w-full text-center border-4 border-amber-300 shadow-2xl transform transition-all scale-90 opacity-0 relative">
+            
+            <div class="text-xs sm:text-sm font-black text-sky-800 bg-sky-100 px-4 py-1.5 rounded-full inline-block mb-1 border border-sky-200 shadow-sm">
+                🎉 ตกปลาได้แล้ว!
+            </div>
+
+            <!-- Big Fish Display Area -->
+            <div class="relative w-52 h-44 mx-auto my-1 flex items-center justify-center">
+                <div class="absolute inset-0 bg-amber-300/30 rounded-full blur-xl animate-pulse"></div>
+                <!-- Big SVG Fish Container -->
+                <div id="bigFishSvg" class="w-full h-full relative z-10 filter drop-shadow-xl transform hover:scale-105 transition"></div>
+            </div>
+
+            <!-- Revealed Word Display -->
+            <div class="my-2">
+                <div class="text-xs text-slate-500 font-bold mb-1">คำศัพท์ที่ตกได้:</div>
+                <div id="modalWord" class="text-5xl md:text-6xl font-black text-slate-900 tracking-wide font-kanit my-1 drop-shadow-sm">
+                    พ่อ
+                </div>
+            </div>
+
+            <!-- Sound Controls -->
+            <div class="flex justify-center items-center gap-3 my-4">
+                <button id="btnListenAgain" onclick="speakCurrentWord()" class="btn-blue text-white font-bold py-3 px-6 rounded-2xl flex items-center gap-2 text-base md:text-lg">
+                    <i class="fas fa-volume-up text-xl"></i>
+                    <span>ฟังเสียงอ่านซ้ำ</span>
+                </button>
+            </div>
+
+            <!-- Next Fish Button -->
+            <button onclick="closeFishModal()" class="btn-green w-full text-white font-black py-3.5 px-6 rounded-2xl text-base md:text-lg shadow-lg">
+                เก็บใส่ถัง & ตกตัวต่อไป 🎣
+            </button>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL: WORD BUCKET / COLLECTION DRAWER -->
+    <div id="bucketModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-white rounded-3xl p-5 md:p-6 max-w-lg w-full text-center border-4 border-sky-300 shadow-2xl relative max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🪣</span>
+                    <h2 class="text-lg md:text-xl font-black text-sky-950 font-mali">ถังเก็บคำศัพท์ (<span id="bucketCount">0</span>/48)</h2>
+                </div>
+                <button onclick="closeBucketModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold px-2">&times;</button>
+            </div>
+
+            <!-- Word Grid -->
+            <div id="bucketGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 overflow-y-auto p-2 flex-1 custom-scrollbar">
+                <!-- Words dynamically filled here -->
+            </div>
+
+            <div class="mt-4 pt-2 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                <span>แตะที่คำศัพท์เพื่อฟังเสียงอ่านซ้ำ</span>
+                <button onclick="closeBucketModal()" class="btn-blue text-white font-bold px-5 py-2 rounded-xl text-xs">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL: VICTORY / GAME COMPLETE -->
+    <div id="victoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-gradient-to-b from-yellow-50 via-white to-amber-50 rounded-3xl p-6 md:p-8 max-w-md w-full text-center border-4 border-yellow-400 shadow-2xl relative overflow-hidden">
+            <div class="text-6xl mb-2 animate-bounce">🏆</div>
+            <h2 class="text-2xl md:text-3xl font-black text-amber-950 font-mali mb-1">เก่งมากเลยเด็กๆ!</h2>
+            <p class="text-amber-800 font-bold text-sm md:text-base mb-3">น้องตกปลาและเรียนรู้คำศัพท์ครบทั้ง 48 คำแล้ว!</p>
+
+            <!-- Star Rating -->
+            <div class="flex justify-center space-x-2 text-amber-400 text-3xl mb-4">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+
+            <!-- Summary Box -->
+            <div class="bg-amber-100/80 rounded-2xl p-4 my-3 border border-amber-300">
+                <div class="text-amber-900 font-bold text-sm">อ่านและสะสมคำศัพท์สำเร็จรวม</div>
+                <div id="victoryTotalCount" class="text-4xl font-extrabold text-amber-600 font-mali my-1">48 / 48 คำ</div>
+                <div class="text-xs text-amber-800 font-medium">เก่งภาษาไทยสุดๆ ✨</div>
+            </div>
+
+            <!-- Play Again Button -->
+            <button onclick="restartGame()" class="btn-game w-full text-amber-950 font-black py-4 px-6 rounded-2xl text-xl shadow-lg mt-2 flex items-center justify-center gap-2">
+                <i class="fas fa-play text-xl"></i>
+                <span>เล่นใหม่อีกครั้ง</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* ====================================================================
+           1. VOCABULARY DATABASE (48 Thai Words for Primary School)
+           ==================================================================== */
+        const VOCABULARY_LIST = [
+            "พ่อ", "ชาวนา", "ฉัน", "คุณครู", "แม่", "น้อง", "แม่ค้า", "นก", 
+            "แมว", "ป้า", "เด็ก", "กบ", "มด", "ตำรวจ", "ผู้ชาย", "ผู้หญิง", 
+            "วิ่ง", "ดื่ม", "กระโดด", "ไป", "ตี", "นั่ง", "เดิน", "ขาย", 
+            "ดู", "ซื้อ", "ฟัง", "ทอด", "อ่าน", "เตะ", "ทิ้ง", "ดูแล", 
+            "หนังสือ", "ข้าว", "กุ้ง", "ขนม", "ชานม", "ทะเล", "ไข่", "ปลาทู", 
+            "โรงเรียน", "กระเป๋า", "ตะกร้า", "สุนัข", "รองเท้า", "จักรยาน", "ตุ๊กตา"
+        ];
+
+        // Kid-Friendly Color Palettes for Big Fishes
+        const FISH_PALETTES = [
+            { body: '#FF6B6B', fin: '#FF8E8E', accent: '#C0392B' }, // Coral Red
+            { body: '#4ECDC4', fin: '#71E5DE', accent: '#16A085' }, // Teal
+            { body: '#FFD166', fin: '#FFE08A', accent: '#D35400' }, // Gold Yellow
+            { body: '#1A535C', fin: '#267885', accent: '#0F3338' }, // Ocean Blue
+            { body: '#FF9F1C', fin: '#FFB74D', accent: '#B95C00' }, // Vibrant Orange
+            { body: '#9B51E0', fin: '#BB6BD9', accent: '#5B2C6F' }, // Purple
+            { body: '#2ECC71', fin: '#58D68D', accent: '#196F3D' }, // Emerald Green
+            { body: '#FF69B4', fill: '#FF8DA1', accent: '#880E4F' }  // Hot Pink
+        ];
+
+        /* ====================================================================
+           2. GAME STATE MANAGEMENT
+           ==================================================================== */
+        let availableWords = [];
+        let caughtWords = [];
+        let activeFishList = [];
+        let currentCaughtWord = "";
+        let isMuted = false;
+        let isBgmMuted = false;
+        let isFishingInProgress = false;
+
+        // Fishing Line Canvas
+        const canvas = document.getElementById('fishingCanvas');
+        const ctx = canvas.getContext('2d');
+        let hookPos = { x: 0, y: 0 };
+        let isLineAnimating = false;
+
+        // Thai Voice Ref
+        let thaiVoice = null;
+
+        /* ====================================================================
+           3. WEB AUDIO SYNTHESIZER & UPBEAT BGM ENGINE
+           ==================================================================== */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let bgmTimer = null;
+        let bgmStep = 0;
+        let isBgmPlaying = false;
+
+        // Playful Pentatonic Upbeat Music Melody Notes (C Major Pentatonic)
+        const BGM_MELODY = [
+            261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 392.00,
+            293.66, 349.23, 440.00, 587.33, 440.00, 349.23, 293.66, 440.00,
+            329.63, 392.00, 523.25, 659.25, 523.25, 392.00, 329.63, 523.25,
+            392.00, 329.63, 293.66, 261.63, 293.66, 329.63, 392.00, 523.25
+        ];
+
+        function startBgm() {
+            if (isBgmPlaying || isBgmMuted) return;
+            isBgmPlaying = true;
+            bgmStep = 0;
+
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            bgmTimer = setInterval(() => {
+                if (isBgmMuted || isMuted) return;
+
+                const now = audioCtx.currentTime;
+                const freq = BGM_MELODY[bgmStep % BGM_MELODY.length];
+
+                // Lead Note
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.18);
+
+                // Bassline Beat on quarter steps
+                if (bgmStep % 4 === 0) {
+                    const bassOsc = audioCtx.createOscillator();
+                    const bassGain = audioCtx.createGain();
+                    bassOsc.type = 'triangle';
+                    bassOsc.frequency.setValueAtTime(130.81, now); // Low C
+
+                    bassGain.gain.setValueAtTime(0.05, now);
+                    bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                    bassOsc.connect(bassGain);
+                    bassGain.connect(audioCtx.destination);
+
+                    bassOsc.start(now);
+                    bassOsc.stop(now + 0.25);
+                }
+
+                bgmStep++;
+            }, 220); // ~136 BPM cheerful tempo
+        }
+
+        function stopBgm() {
+            if (bgmTimer) {
+                clearInterval(bgmTimer);
+                bgmTimer = null;
+            }
+            isBgmPlaying = false;
+        }
+
+        function toggleBgm() {
+            isBgmMuted = !isBgmMuted;
+            const eqIcon = document.getElementById('musicEqIcon');
+            const bgmText = document.getElementById('bgmText');
+
+            if (isBgmMuted) {
+                stopBgm();
+                eqIcon.style.opacity = '0.3';
+                if (bgmText) bgmText.innerText = "เพลง 🔇";
+            } else {
+                eqIcon.style.opacity = '1.0';
+                if (bgmText) bgmText.innerText = "เพลง 🎵";
+                startBgm();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'cast') {
+                    // Line drop splash sound
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                } else if (type === 'catch') {
+                    // Catch chime sound
+                    const notes = [350, 520, 700];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'triangle';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        g.gain.setValueAtTime(0.25, now + idx * 0.08);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.25);
+                        o.start(now + idx * 0.08);
+                        o.stop(now + idx * 0.08 + 0.25);
+                    });
+                } else if (type === 'victory') {
+                    // Victory Fanfare
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.35);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + idx * 0.12 + 0.35);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio playback error:", e);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const soundIcon = document.getElementById('soundIcon');
+            if (isMuted) {
+                soundIcon.className = "fas fa-volume-mute text-red-500";
+            } else {
+                soundIcon.className = "fas fa-volume-up text-sky-700";
+                playSound('cast');
+            }
+        }
+
+        /* ====================================================================
+           4. THAI TEXT-TO-SPEECH (WEB SPEECH API)
+           ==================================================================== */
+        function initSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                const loadVoices = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    thaiVoice = voices.find(v => v.lang.includes('th') || v.lang.includes('TH')) || null;
+                };
+
+                loadVoices();
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = loadVoices;
+                }
+            }
+        }
+
+        function speakWord(text) {
+            if (isMuted || !('speechSynthesis' in window)) return;
+
+            window.speechSynthesis.cancel(); // Interrupt prior speech
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'th-TH';
+            utterance.rate = 0.85; // Natural clear pace for primary students
+            utterance.pitch = 1.1;
+
+            if (thaiVoice) {
+                utterance.voice = thaiVoice;
+            }
+
+            const btn = document.getElementById('btnListenAgain');
+            if (btn) btn.classList.add('audio-playing');
+
+            utterance.onend = () => { if (btn) btn.classList.remove('audio-playing'); };
+            utterance.onerror = () => { if (btn) btn.classList.remove('audio-playing'); };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* ====================================================================
+           5. SVG FISH GRAPHIC GENERATOR
+           ==================================================================== */
+        function generateFishSVG(word, palette, facingRight = true, isRevealed = false) {
+            const scaleX = facingRight ? 1 : -1;
+            const displayText = isRevealed ? word : "❓";
+            const badgeBg = isRevealed ? "#FFFFFF" : "#FEF08A";
+            const badgeText = isRevealed ? palette.accent : "#854D0E";
+
+            return `
+            <svg viewBox="0 0 190 105" class="w-full h-full drop-shadow-md">
+                <g transform="scale(${scaleX}, 1) translate(${facingRight ? 0 : -190}, 0)">
+                    <!-- Tail Fin -->
+                    <path d="M 38 52 L 6 20 Q 0 52 6 84 Z" fill="${palette.fin}" />
+                    
+                    <!-- Top & Bottom Fins -->
+                    <path d="M 85 20 Q 100 0 115 20 Z" fill="${palette.fin}" />
+                    <path d="M 90 85 Q 105 105 120 85 Z" fill="${palette.fin}" />
+
+                    <!-- Main Big Body -->
+                    <path d="M 32 52 C 42 10, 148 10, 178 52 C 148 94, 42 94, 32 52 Z" fill="${palette.body}" />
+                    
+                    <!-- Scales Pattern -->
+                    <path d="M 72 38 Q 78 48 72 58" stroke="rgba(255,255,255,0.35)" stroke-width="3" fill="none" />
+                    <path d="M 88 32 Q 94 48 88 64" stroke="rgba(255,255,255,0.35)" stroke-width="3" fill="none" />
+
+                    <!-- Big Cute Eye -->
+                    <circle cx="152" cy="42" r="9" fill="#FFFFFF" />
+                    <circle cx="154" cy="42" r="4.5" fill="#000000" />
+                    <circle cx="156" cy="39" r="1.8" fill="#FFFFFF" />
+
+                    <!-- Mouth Smile -->
+                    <path d="M 172 55 Q 166 62 160 57" stroke="#000000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                    <!-- Mystery Badge Frame -->
+                    <rect x="52" y="32" width="82" height="40" rx="12" fill="${badgeBg}" stroke="${palette.body}" stroke-width="2.5" />
+                </g>
+                <!-- Badge Text (Question mark ❓ underwater, actual word when caught) -->
+                <text x="93" y="58" font-family="'Prompt', 'Kanit', sans-serif" font-size="${isRevealed ? '20' : '22'}" font-weight="bold" fill="${badgeText}" text-anchor="middle" dominant-baseline="middle">
+                    ${displayText}
+                </text>
+            </svg>`;
+        }
+
+        /* ====================================================================
+           6. GAME INITIALIZATION & SPAWNER ENGINE
+           ==================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            initSpeechSynthesis();
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            document.getElementById('totalCount').innerText = VOCABULARY_LIST.length;
+
+            // Start Audio on first click/tap anywhere
+            const startAudioOnTouch = () => {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                startBgm();
+                window.removeEventListener('click', startAudioOnTouch);
+                window.removeEventListener('touchstart', startAudioOnTouch);
+            };
+            window.addEventListener('click', startAudioOnTouch);
+            window.addEventListener('touchstart', startAudioOnTouch);
+
+            // Start Game
+            restartGame();
+
+            // Main Animation Loop
+            requestAnimationFrame(gameLoop);
+        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function restartGame() {
+            // Shuffle Words without repeat
+            availableWords = [...VOCABULARY_LIST];
+            availableWords.sort(() => Math.random() - 0.5);
+            caughtWords = [];
+            
+            // Clear Container
+            const container = document.getElementById('fishContainer');
+            container.innerHTML = '';
+            activeFishList = [];
+
+            // UI Reset
+            document.getElementById('caughtCount').innerText = 0;
+            document.getElementById('victoryModal').classList.add('hidden');
+            document.getElementById('fishModal').classList.add('hidden');
+            document.getElementById('bucketModal').classList.add('hidden');
+
+            maintainFishPopulation();
+        }
+
+        function maintainFishPopulation() {
+            const pond = document.getElementById('pondArea');
+            const pondWidth = pond.clientWidth;
+            const pondHeight = pond.clientHeight;
+
+            // Keep 5 to 6 big swimming fishes in pond
+            const targetCount = Math.min(6, availableWords.length);
+
+            while (activeFishList.length < targetCount && availableWords.length > 0) {
+                const word = availableWords.pop();
+                const palette = FISH_PALETTES[Math.floor(Math.random() * FISH_PALETTES.length)];
+                
+                // Swim Direction
+                const facingRight = Math.random() > 0.5;
+
+                const fishEl = document.createElement('div');
+                fishEl.className = 'fish-item w-36 h-24 sm:w-44 sm:h-28';
+                // Underwater fish shows Mystery Question Mark ❓
+                fishEl.innerHTML = generateFishSVG(word, palette, facingRight, false);
+
+                const startX = facingRight ? -170 : pondWidth + 60;
+                const startY = Math.random() * (pondHeight - 130) + 20;
+
+                fishEl.style.left = `${startX}px`;
+                fishEl.style.top = `${startY}px`;
+
+                const fishObj = {
+                    element: fishEl,
+                    word: word,
+                    palette: palette,
+                    x: startX,
+                    y: startY,
+                    speed: (Math.random() * 0.7 + 0.6) * (facingRight ? 1 : -1),
+                    facingRight: facingRight,
+                    bobOffset: Math.random() * Math.PI * 2
+                };
+
+                fishEl.addEventListener('click', (e) => onFishClicked(fishObj, e));
+                fishEl.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    onFishClicked(fishObj, e);
+                });
+
+                document.getElementById('fishContainer').appendChild(fishEl);
+                activeFishList.push(fishObj);
+            }
+        }
+
+        function gameLoop() {
+            const pond = document.getElementById('pondArea');
+            const pondWidth = pond.clientWidth;
+
+            // Swim movement logic
+            for (let i = activeFishList.length - 1; i >= 0; i--) {
+                const fish = activeFishList[i];
+                fish.x += fish.speed;
+                fish.bobOffset += 0.035;
+                const bobY = Math.sin(fish.bobOffset) * 0.7;
+
+                fish.element.style.left = `${fish.x}px`;
+                fish.element.style.top = `${fish.y + bobY}px`;
+
+                // Wrap around / recycle
+                if ((fish.speed > 0 && fish.x > pondWidth + 120) || (fish.speed < 0 && fish.x < -200)) {
+                    availableWords.unshift(fish.word);
+                    fish.element.remove();
+                    activeFishList.splice(i, 1);
+                }
+            }
+
+            maintainFishPopulation();
+            drawFishingLine();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        /* ====================================================================
+           7. CATCH MECHANICS & REEL ANIMATION
+           ==================================================================== */
+        function onFishClicked(fishObj, event) {
+            if (isFishingInProgress) return;
+            isFishingInProgress = true;
+
+            playSound('cast');
+
+            const rect = fishObj.element.getBoundingClientRect();
+            const targetX = rect.left + rect.width / 2;
+            const targetY = rect.top + rect.height / 2;
+
+            const rodTipX = window.innerWidth < 768 ? 140 : 260;
+            const rodTipY = window.innerHeight * 0.18;
+
+            let progress = 0;
+            isLineAnimating = true;
+
+            const animateHook = () => {
+                progress += 0.09;
+                if (progress < 1) {
+                    hookPos.x = rodTipX + (targetX - rodTipX) * progress;
+                    hookPos.y = rodTipY + (targetY - rodTipY) * progress;
+                    requestAnimationFrame(animateHook);
+                } else {
+                    hookPos.x = targetX;
+                    hookPos.y = targetY;
+
+                    setTimeout(() => {
+                        isLineAnimating = false;
+                        catchFishSuccess(fishObj);
+                    }, 100);
+                }
+            };
+
+            animateHook();
+        }
+
+        function drawFishingLine() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!isLineAnimating) return;
+
+            const rodTipX = window.innerWidth < 768 ? 140 : 260;
+            const rodTipY = window.innerHeight * 0.18;
+
+            ctx.beginPath();
+            ctx.moveTo(rodTipX, rodTipY);
+            
+            const cpX = (rodTipX + hookPos.x) / 2 + 15;
+            const cpY = (rodTipY + hookPos.y) / 2 - 10;
+            
+            ctx.quadraticCurveTo(cpX, cpY, hookPos.x, hookPos.y);
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Metal Hook
+            ctx.beginPath();
+            ctx.arc(hookPos.x, hookPos.y - 6, 6, 0, Math.PI);
+            ctx.strokeStyle = '#E2E8F0';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        function catchFishSuccess(fishObj) {
+            playSound('catch');
+
+            const index = activeFishList.indexOf(fishObj);
+            if (index > -1) {
+                activeFishList.splice(index, 1);
+            }
+            fishObj.element.remove();
+
+            caughtWords.push(fishObj.word);
+            currentCaughtWord = fishObj.word;
+
+            document.getElementById('caughtCount').innerText = caughtWords.length;
+
+            showFishModal(fishObj);
+        }
+
+        /* ====================================================================
+           8. MODALS & WORD BUCKET DRAWER
+           ==================================================================== */
+        function showFishModal(fishObj) {
+            const modal = document.getElementById('fishModal');
+            const card = document.getElementById('modalCard');
+            const svgContainer = document.getElementById('bigFishSvg');
+
+            // Render Big Caught Fish with REVEALED Word text
+            svgContainer.innerHTML = generateFishSVG(fishObj.word, fishObj.palette, true, true);
+
+            // Display Word
+            document.getElementById('modalWord').innerText = fishObj.word;
+
+            modal.classList.remove('hidden');
+
+            setTimeout(() => {
+                card.classList.remove('scale-90', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Read Word Aloud
+            setTimeout(() => {
+                speakWord(fishObj.word);
+            }, 300);
+        }
+
+        function speakCurrentWord() {
+            if (currentCaughtWord) {
+                speakWord(currentCaughtWord);
+            }
+        }
+
+        function closeFishModal() {
+            const modal = document.getElementById('fishModal');
+            const card = document.getElementById('modalCard');
+
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-90', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                isFishingInProgress = false;
+
+                if (caughtWords.length >= VOCABULARY_LIST.length) {
+                    showVictoryModal();
+                } else {
+                    maintainFishPopulation();
+                }
+            }, 200);
+        }
+
+        function openBucketModal() {
+            const modal = document.getElementById('bucketModal');
+            const grid = document.getElementById('bucketGrid');
+            document.getElementById('bucketCount').innerText = caughtWords.length;
+
+            grid.innerHTML = '';
+
+            if (caughtWords.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-slate-400 font-medium">ยังไม่มีคำศัพท์ในถัง ตกปลาเลย! 🎣</div>`;
+            } else {
+                caughtWords.forEach(word => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-sky-50 hover:bg-sky-100 border-2 border-sky-200 text-sky-950 font-bold py-2.5 px-3 rounded-2xl shadow-sm text-center text-sm md:text-base flex items-center justify-between transition hover:scale-105";
+                    btn.innerHTML = `<span>${word}</span> <i class="fas fa-volume-up text-xs text-sky-500"></i>`;
+                    btn.onclick = () => speakWord(word);
+                    grid.appendChild(btn);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBucketModal() {
+            document.getElementById('bucketModal').classList.add('hidden');
+        }
+
+        function showVictoryModal() {
+            playSound('victory');
+            
+            const victoryModal = document.getElementById('victoryModal');
+            document.getElementById('victoryTotalCount').innerText = `${caughtWords.length} / ${VOCABULARY_LIST.length} คำ`;
+            victoryModal.classList.remove('hidden');
+
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 90,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function resetGamePrompt() {
+            restartGame();
+        }
+    </script>
+</body>
+</html>
